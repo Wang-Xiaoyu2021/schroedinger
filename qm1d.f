@@ -69,7 +69,7 @@ c --- set up plotting options
       write(10,'("set term post ''Helvetica'' 21")')
       write(10,'("set output ''qm1d.ps''")')
       write(10,'("set nokey")')
-      write(10,'("set data style lines")')
+      write(10,'("#set data style lines")')
       write(10,'("set yrange [",F12.8,":",F12.8,"]")') Vmin,ee(m)+de
 c --- write plot commands for potential and eigenfunctions
       de=0.15d0*sqrt(dble(NPTS))*de
