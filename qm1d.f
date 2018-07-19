@@ -10,6 +10,8 @@ c     >>> no attempt has been made to make this code efficient <<<
 c     >>> so don't use it for production! <<<         EK MPI-FKF XII'03
 c     *****************************************************************
       implicit none
+      integer :: fid
+      character(100) :: tmp
       integer    NPTS,     NSTM
       parameter (NPTS=201, NSTM=20)
       integer    i,n,nst
@@ -17,6 +19,8 @@ c     *****************************************************************
       real*8     diag(NPTS),subd(NPTS), ee(NPTS),ev(NPTS,NSTM), de
       integer    m, iwork(5*NPTS), ifail(NPTS), info
       real*8     abstol, work(5*NPTS), dlamch
+c     -----------------------------------------------------------------
+      fid = 40
 c     -----------------------------------------------------------------
 c --- specify units:
 c     rewrite Schroedinger equation: v(x)=2m*V(x)/hbar^2; ee=2m*E/hbar^2
@@ -64,6 +68,34 @@ c     minimum of potential for plotting range
       enddo
 c     average spacing of energy levels (for adjusting scale of ev)
       de=(ee(nst)-ee(1))/dble(nst-1)
+      !-----------------------------------------------------------------
+      ! output
+      !
+      open(fid, file="qm1d.dat")
+         write(fid, '(a15)', advance='no') "x"
+         write(fid, '(a15)', advance='no') "v"
+         do i=1, nst
+            write(tmp, '(a,i0,a)') "E(",i,")"
+            write(fid, '(a15)', advance='no') trim(tmp)
+            write(tmp, '(a,i0,a)') "V(",i,")"
+            write(fid, '(a15)', advance='no') trim(tmp)
+         end do
+         write(fid,*)
+         do n=1, NPTS
+            write(fid, '(f15.7)', advance='no') (n-1) * dx
+            write(fid, '(f15.7)', advance='no') v(n)
+            do i=1, nst
+               write(fid, '(f15.7)', advance='no') ee(i)
+               write(fid, '(f15.7)', advance='no') ev(n,i) + ee(i)
+            end do
+            write(fid,*)
+         end do
+      close(fid)
+      !-----------------------------------------------------------------
+      !-----------------------------------------------------------------
+      !-----------------------------------------------------------------
+      !-----------------------------------------------------------------
+      !-----------------------------------------------------------------
       open(10,file='qm1d.gnu')
 c --- set up plotting options
       write(10,'("set term post ''Helvetica'' 21")')
