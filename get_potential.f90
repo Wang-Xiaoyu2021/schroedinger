@@ -23,12 +23,12 @@ subroutine get_potential(n, v, h, vtype)
 			v = h
 			v(m+1:m*3+1) = 0.D0
 			v(m/10+1:m/10*8 + 1) = 0.D0
-		! case (4)
-			! m = (n-1)/4
-			! v = h
-			! v(m/10+1:m/10*8 + 1) = 0.D0
-		! case default
-			! v=0.0D0
+		case (4)
+			m = (n-1)/4
+			v = h
+			v(m/10+1:m/10*8 + 1) = 0.D0
+		case default
+			v = 0.0D0
 	end select
 	!-----------------------------------------------------------------------
 	return
