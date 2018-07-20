@@ -10,17 +10,18 @@ c     >>> no attempt has been made to make this code efficient <<<
 c     >>> so don't use it for production! <<<         EK MPI-FKF XII'03
 c     *****************************************************************
       implicit none
-      integer :: fid
+      integer :: fid, vtype
       character(100) :: tmp
       integer    NPTS,     NSTM
-      parameter (NPTS=201, NSTM=20)
+      parameter (NPTS=401, NSTM=20)
       integer    i,n,nst
-      real*8     dx, v(NPTS), vmin
+      real*8     dx, v(NPTS), vmin, vscale, h
       real*8     diag(NPTS),subd(NPTS), ee(NPTS),ev(NPTS,NSTM), de
       integer    m, iwork(5*NPTS), ifail(NPTS), info
       real*8     abstol, work(5*NPTS), dlamch
 c     -----------------------------------------------------------------
       fid = 40
+	  vscale = 0.25D0
 c     -----------------------------------------------------------------
 c --- specify units:
 c     rewrite Schroedinger equation: v(x)=2m*V(x)/hbar^2; ee=2m*E/hbar^2
@@ -34,9 +35,10 @@ c --- discretization
 c --- define potential
       write(*,'("particle in a box")')
       nst=10
-      do i=1,NPTS
-        v(i)=0d0
-      enddo
+	   ! vtype = 1
+		vtype = 4
+		h     = 20.D0
+	   call get_potential(NPTS, v, h, vtype)
 c --- discretized form of kinetic energy operator (incl. boundary cond.)
 c     f''(x_i) \approx (f(x_{i-1})-2*f(x_i)+f(x_{i+1}))/dx^2
 c     by dropping terms from outside the mesh, we have chosen boundary
@@ -69,6 +71,8 @@ c     minimum of potential for plotting range
 c     average spacing of energy levels (for adjusting scale of ev)
       de=(ee(nst)-ee(1))/dble(nst-1)
       !-----------------------------------------------------------------
+	  ev = ev / sqrt(dx) * vscale
+      !-----------------------------------------------------------------
       ! output
       !
       open(fid, file="qm1d.dat")
@@ -91,9 +95,6 @@ c     average spacing of energy levels (for adjusting scale of ev)
             write(fid,*)
          end do
       close(fid)
-      !-----------------------------------------------------------------
-      !-----------------------------------------------------------------
-      !-----------------------------------------------------------------
       !-----------------------------------------------------------------
       !-----------------------------------------------------------------
       open(10,file='qm1d.gnu')
