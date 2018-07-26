@@ -36,7 +36,7 @@ c --- define potential
       write(*,'("particle in a box")')
       nst=10
 	   ! vtype = 1
-		vtype = 3
+		vtype = 7
 		h     = 20.D0
 	   call get_potential(NPTS, v, h, vtype)
 c --- discretized form of kinetic energy operator (incl. boundary cond.)
